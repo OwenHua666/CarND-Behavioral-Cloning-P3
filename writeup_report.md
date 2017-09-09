@@ -80,21 +80,26 @@ For details about how I created the training data, see the next section.
 
 The overall strategy for deriving a model architecture was to iteratively test different structures and parameters to achieve a lower validation loss.
 
-My first step was to start with a simple model architecture which only contains one 36-3x3 convolutional layers and three fully connected layers. I also looked at the neural network presented by Nvidia Self-Driving Car group, but I think it is too complicated for this project. I also don't have enough images to train a network with so many parameters as Nvidia has.
+My first step was to start with a simple model architecture which only contains one 36-3x3 convolutional layers and three fully connected layers. I also looked at the neural network presented by Nvidia Self-Driving Car group, but I think it is too complicated for this project. I also don't have enough images to train a network with so many parameters. My final version of the model architecture does contain one more convolutional layer and a few more fully connected layers The size and add layers are determined through test.
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
+In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. It is weird that my first validation loss is small and my first training loss is big. As the training epoch increases, the two errors decrease and converge. In the last few epochs, the validation loss is greater than the training loss. This indicates the trained neural network overfits the training dataset. 
 
-To combat the overfitting, I modified the model so that ...
+To fight against overfitting, I add Max Pooling layer after first convolutional layer and apply dropout to the first fully connected layer.
 
-Then I ... 
+The final step was to run the simulator to see how well the car was driving around track one. My first few models drive the vehicle off the trace because I normalized the image twice in the prediction pipeline. After debugging, even the simple model can drive the vehicle within the track at a low speed(9 mi/hr). When I increase the set_speed in drive.py, the vehicle starts to have a zigzagy trajectory around the center lane of the track. When the speed is 15 mi/hr, the vehicle loses its capability to recover to the centerline and falls off the track. To improve the driving behavior in these cases, I use a more complicated neural network (one more convolutional layer and one more fully connected layer). More importantly, I obtain more training data when I drive the vehicle smoothly on the course. 
 
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
-
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
+At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road at a highest speed of 21 mi/hr. 
 
 #### 2. Final Model Architecture
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+The final model architecture consisted of a convolution neural network with the following layers and layer sizes.
+* ConvNet 36-5x5
+* MaxPooling 2x2
+* ConvNet 48-3x3
+* Flatten
+* FC 100
+* FC 50
+* FC 10
 
 Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
 
@@ -102,28 +107,24 @@ Here is a visualization of the architecture (note: visualizing the architecture 
 
 #### 3. Creation of the Training Set & Training Process
 
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
+To capture good driving behavior, I first recorded three laps on track one using center lane driving. Here is an example image of center lane driving:
 
 ![alt text][image2]
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
+I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to recover when it goes off the center line of the lane. I also drove the vehicle as smooth as possible. These compose the dataset I obtained from the fouth lap and fifth lap.
 
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
-
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
+To augment the data sat, I also flipped images and angles thinking that this would balance dataset which has more "left turns". For example, here is an image that has then been flipped:
 
 ![alt text][image6]
 ![alt text][image7]
 
-Etc ....
+I noticed there are a lot of small turning angles in the dataset because the vehicle is driving straight most of the time. So, I drop 75% image data whose turning angle is smaller than 0.15.
 
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+I tried to shift the image left and right and adjusted its turning angle based on the shifting magnitude. A random brighness is also added to the image. However, these two augmentation methods does not improve the driving performance and increases both training and validation errors. Therefore, the code of these two methods are shown in model.py, but they are not called in the training pipeline. 
+
+After the collection process, I had 15368 number of data points. I then preprocessed this data by cropping the irrelevant area like the sky and hood out and resize each image to 64x64x3.  
 
 
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
+I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 8 as evidenced by the training loss and validation loss are not decreasing after 8 epochs. I used an adam optimizer so that manually training the learning rate wasn't necessary.
