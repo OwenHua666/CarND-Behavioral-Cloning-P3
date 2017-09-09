@@ -1,10 +1,8 @@
-# **Behavioral Cloning** 
+# Behavioral Cloning
 
 ## Writeup
 
 ---
-
-** Behavioral Cloning Project**
 
 The goals / steps of this project are the following:
 * Use the simulator to collect data of good driving behavior
@@ -16,13 +14,9 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/placeholder.png "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+[image1]: ./examples/Model_Architecture.png "Model Visualization"
+[image2]: ./examples/center_driving.PNG "Grayscaling"
+[image3]: ./examples/flip.PNG "Recovery Image"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -115,8 +109,7 @@ I then recorded the vehicle recovering from the left side and right sides of the
 
 To augment the data sat, I also flipped images and angles thinking that this would balance dataset which has more "left turns". For example, here is an image that has then been flipped:
 
-![alt text][image6]
-![alt text][image7]
+![alt text][image3]
 
 I noticed there are a lot of small turning angles in the dataset because the vehicle is driving straight most of the time. So, I drop 75% image data whose turning angle is smaller than 0.15.
 
